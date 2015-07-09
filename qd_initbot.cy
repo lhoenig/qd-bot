@@ -1,0 +1,1 @@
+UIAlertView.messages['show'] = function() {}
