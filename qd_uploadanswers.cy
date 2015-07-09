@@ -7,23 +7,23 @@ function nextAnswer() {
     return Math.floor((Math.random() * 10) + 1) > 1 ? 0 : 1;
 }
 
-var u = [[UIApplication sharedApplication].keyWindow.rootViewController.topViewController user];
+var user = [[UIApplication sharedApplication].keyWindow.rootViewController.topViewController user];
 
-var games_count = [[u games] count];
+var games_count = [[user games] count];
 
 for (var i = 0; i < games_count; i++) {
 
-	var g = [[u games] objectAtIndex:i];
-	if ([g isMyTurn]) {
+	var game = [[user games] objectAtIndex:i];
+	if ([game isMyTurn]) {
 
-		var a = [[NSMutableArray alloc] initWithArray:[g getMyAnswers]];
+		var answ = [[NSMutableArray alloc] initWithArray:[game getMyAnswers]];
 
-		if ([a count] == 15 || ([a count] == 0 && [[g opponentAnswerArray] count] == 0 && [g isMyTurn])) {
+		if ([answ count] == 15 || ([answ count] == 0 && [[game opponentAnswerArray] count] == 0 && [game isMyTurn])) {
 			
 			var newAnswers = [NSArray arrayWithObjects: nextAnswer(), 
 													    nextAnswer(), 
 													    nextAnswer(), nil];
-			[a addObjectsFromArray:newAnswers];
+			[answ addObjectsFromArray:newAnswers];
 		
 		} else {
 			
@@ -33,18 +33,18 @@ for (var i = 0; i < games_count; i++) {
 														nextAnswer(), 
 														nextAnswer(), 
 														nextAnswer(), nil];
-			[a addObjectsFromArray:newAnswers];
+			[answ addObjectsFromArray:newAnswers];
 		}
 
-		var c = [g lastRoundCat];
-		if (!c) c = 0;
+		var cat = [game lastRoundCat];
+		if (!cat) cat = 0;
 
-		var p = [FEOPost post:c key:@"cat_choice"];
-		var id = [g gameID];
-		[p addArray:a key:@"answers"];
-		[p addObject:id key:@"game_id"];
-		[[GAEConnectionHandler sharedGAEConnectionHandler] postRequest:@"games/upload_round_answers" post:p selector:@selector(uploadRoundFinished:) failSEL:@selector(uploadRoundFailed)];
+		var pst = [FEOPost post:cat key:@"cat_choice"];
+		var gid = [game gameID];
+		[pst addArray:answ key:@"answers"];
+		[pst addObject:gid key:@"game_id"];
+		[[GAEConnectionHandler sharedGAEConnectionHandler] postRequest:@"games/upload_round_answers" post:pst selector:@selector(uploadRoundFinished:) failSEL:@selector(uploadRoundFailed)];
 		
-		NSLog(@"Uploading answers against %@", [g getOpponentName]);
+		NSLog(@"Uploading answers against %@", [game getOpponentName]);
 	}
 }
